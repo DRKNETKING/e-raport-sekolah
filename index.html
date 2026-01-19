@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Rapor Digital Pro | International Standard System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --primary: #2563eb;
+            --accent: #6366f1;
+            --surface: #f8fafc;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        /* Premium Login Background */
+        .login-mesh {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border-radius: 12px;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white !important;
+            box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.5);
+        }
+
+        .page-transition {
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Analog Clock Style */
+        .clock-face { width: 40px; height: 40px; border: 1.5px solid #64748b; border-radius: 50%; position: relative; }
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom; background: #64748b; border-radius: 10px; }
+        .hour { width: 2px; height: 10px; }
+        .min { width: 1.5px; height: 14px; }
+        .sec { width: 1px; height: 16px; background: #ef4444; }
+
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    </style>
+</head>
+<body>
+
+<!-- Login Screen International Standard -->
+<div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#020617]">
+    <div class="login-mesh"></div>
+   
+    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-white/5 rounded-[40px] border border-white/10 shadow-2xl overflow-hidden backdrop-blur-xl">
+        <!-- Left Side: Branding -->
+        <div class="hidden lg:flex flex-col p-16 justify-between relative overflow-hidden bg-gradient-to-br from-blue-700 to-indigo-900">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-md"><i data-lucide="shield-check" class="text-white w-8 h-8"></i></div>
+                    <span class="text-2xl font-black tracking-tighter">ERD PRO <span class="text-blue-200 font-light">v4.0</span></span>
+                </div>
+                <h1 class="text-5xl font-black leading-tight mb-6">Sistem Informasi<br>Pendidikan<br><span class="text-blue-300">Terpadu.</span></h1>
+                <p class="text-blue-100/70 text-lg leading-relaxed max-w-sm">Platform manajemen nilai siswa dengan standar keamanan internasional dan integrasi data real-time.</p>
+            </div>
+            <div class="relative z-10 flex items-center gap-4 text-sm font-medium text-white/50">
+                <span>ISO 27001 Certified</span>
+                <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                <span>Cloud Infrastructure</span>
+            </div>
+        </div>
+
+        <!-- Right Side: Login Interaction -->
+        <div class="p-8 lg:p-16 flex flex-col justify-center">
+            <div id="login-step-1" class="page-transition">
+                <div class="mb-10 text-center lg:text-left">
+                    <h2 class="text-3xl font-black mb-2">Selamat Datang</h2>
+                    <p class="text-slate-400">Silakan pilih otoritas akses Anda untuk melanjutkan</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="handleLogin('admin')" class="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-blue-500 hover:bg-blue-500/10 transition-all text-left">
+                        <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><i data-lucide="user-cog"></i></div>
+                        <h4 class="font-bold text-sm mb-1">Administrator</h4>
+                        <p class="text-[11px] text-slate-500">Kelola kurikulum & master data</p>
+                    </button>
+                    <button onclick="handleLogin('guru')" class="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-purple-500 hover:bg-purple-500/10 transition-all text-left">
+                        <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><i data-lucide="edit-3"></i></div>
+                        <h4 class="font-bold text-sm mb-1">Guru Mapel</h4>
+                        <p class="text-[11px] text-slate-500">Input nilai harian & deskripsi</p>
+                    </button>
+                    <button onclick="handleLogin('wali')" class="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all text-left">
+                        <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><i data-lucide="user-check"></i></div>
+                        <h4 class="font-bold text-sm mb-1">Wali Kelas</h4>
+                        <p class="text-[11px] text-slate-500">Absensi & Catatan Wali Kelas</p>
+                    </button>
+                    <button onclick="handleLogin('kepsek')" class="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500/10 transition-all text-left">
+                        <div class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><i data-lucide="award"></i></div>
+                        <h4 class="font-bold text-sm mb-1">Kepala Sekolah</h4>
+                        <p class="text-[11px] text-slate-500">Monitoring & Validasi Rapor</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Fake Loading Shimmer -->
+            <div id="login-loading" class="hidden flex flex-col items-center justify-center py-20">
+                <div class="relative w-20 h-20 mb-8">
+                    <div class="absolute inset-0 border-4 border-blue-500/20 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-t-blue-500 rounded-full animate-spin"></div>
+                </div>
+                <p class="text-sm font-bold tracking-widest text-blue-500">MENGOTENTIKASI...</p>
+                <p class="text-xs text-slate-500 mt-2">Menghubungkan ke secure cloud server</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Application UI -->
+<div id="main-app" class="hidden h-screen bg-slate-50 text-slate-900 flex overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-72 bg-white border-r border-slate-200 flex flex-col z-50">
+        <div class="p-8">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200"><i data-lucide="layout-grid"></i></div>
+                <div><h1 class="font-black text-slate-900 text-lg leading-none tracking-tight">E-RAPOR</h1><span id="role-tag" class="text-[10px] font-black uppercase text-blue-600 tracking-widest">ROLE</span></div>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 space-y-1"></nav>
+        </div>
+        <div class="mt-auto p-6 bg-slate-50 border-t flex items-center gap-4">
+            <img id="user-avatar" src="" class="w-12 h-12 rounded-2xl border-2 border-white shadow-md">
+            <div class="overflow-hidden">
+                <p id="user-name" class="text-sm font-bold text-slate-900 truncate">Name</p>
+                <button onclick="location.reload()" class="text-[10px] text-red-500 font-bold uppercase hover:underline">Keluar Sistem</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-24 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-10 flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-6">
+                <div class="clock-face">
+                    <div class="hand hour" id="h-hand"></div>
+                    <div class="hand min" id="m-hand"></div>
+                    <div class="hand sec" id="s-hand"></div>
+                </div>
+                <div>
+                    <p id="digital-clock" class="text-xl font-black text-slate-900 tabular-nums leading-none">00:00:00</p>
+                    <p id="digital-date" class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Memuat...</p>
+                </div>
+            </div>
+           
+            <div class="flex items-center gap-8">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status Server</p>
+                    <div class="flex items-center gap-2 justify-end">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-sm font-bold text-slate-800 tracking-tight">Cloud Active</span>
+                    </div>
+                </div>
+                <div class="h-10 w-px bg-slate-200"></div>
+                <div class="text-right">
+                    <p class="text-[10px] font-black text-blue-600 uppercase">Tahun Pelajaran</p>
+                    <p class="text-sm font-bold text-slate-900">2023/2024 (Ganjil)</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- View Display Area -->
+        <div id="view-container" class="flex-1 overflow-y-auto p-10 bg-[#f8fafc]">
+            <!-- Dashboard -->
+            <div id="view-dashboard" class="page-transition space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="users" class="w-5 h-5"></i></div>
+                        <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Total Siswa</p><h2 class="text-3xl font-black text-slate-900">1,248</h2></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+                        <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Mata Pelajaran</p><h2 class="text-3xl font-black text-slate-900">18</h2></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <div class="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="award" class="w-5 h-5"></i></div>
+                        <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Kenaikan Rata-rata</p><h2 class="text-3xl font-black text-slate-900">+12%</h2></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+                        <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Rapor Terbit</p><h2 class="text-3xl font-black text-slate-900">85%</h2></div>
+                    </div>
+                </div>
+                <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <h3 class="font-black text-lg mb-8 flex items-center gap-3"><i data-lucide="trending-up" class="text-blue-500"></i> Grafik Perkembangan Akademik</h3>
+                    <canvas id="chartDashboard" height="80"></canvas>
+                </div>
+            </div>
+
+            <!-- View: Data Siswa (Admin) -->
+            <div id="view-siswa" class="hidden page-transition space-y-6">
+                <div class="flex justify-between items-end">
+                    <div><h2 class="text-3xl font-black">Data Siswa</h2><p class="text-slate-400">Total 1,248 siswa terdaftar aktif</p></div>
+                    <div class="flex gap-3">
+                        <button class="px-6 py-3 bg-white border border-slate-200 rounded-2xl font-bold text-xs"><i data-lucide="download" class="inline w-4 h-4 mr-2"></i> Ekspor</button>
+                        <button class="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-lg shadow-blue-200">+ Siswa Baru</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100"><tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <th class="px-8 py-5">Informasi Siswa</th><th class="px-4 py-5">NISN/NIS</th><th class="px-4 py-5">Kelas</th><th class="px-4 py-5">Status</th><th class="px-8 py-5 text-right">Opsi</th>
+                        </tr></thead>
+                        <tbody id="table-siswa" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- View: Input Nilai (Guru) -->
+            <div id="view-input" class="hidden page-transition space-y-6">
+                <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-12 rounded-[3rem] text-white relative overflow-hidden">
+                    <div class="relative z-10">
+                        <p class="text-xs font-bold opacity-60 uppercase tracking-widest mb-2">Manajemen Penilaian</p>
+                        <h2 class="text-4xl font-black mb-6">Matematika Terapan <span class="text-blue-300">XI-RPL 1</span></h2>
+                        <div class="flex gap-4">
+                            <button onclick="saveNotify()" class="px-8 py-4 bg-white text-blue-700 rounded-2xl font-black shadow-xl hover:scale-105 transition-transform">SIMPAN SEMUA DATA</button>
+                            <button class="px-8 py-4 bg-white/10 text-white rounded-2xl font-black border border-white/20">RIWAYAT INPUT</button>
+                        </div>
+                    </div>
+                    <i data-lucide="database" class="absolute -right-10 -bottom-10 w-64 h-64 text-white/5 rotate-12"></i>
+                </div>
+                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100"><tr class="text-[10px] font-black text-slate-400 uppercase">
+                            <th class="px-10 py-6">Nama Lengkap</th><th class="px-4 py-6 text-center">Tugas 1</th><th class="px-4 py-6 text-center">UH</th><th class="px-4 py-6 text-center">UTS</th><th class="px-4 py-6 text-center">UAS</th><th class="px-10 py-6 text-center bg-blue-50 text-blue-600">Akhir</th>
+                        </tr></thead>
+                        <tbody id="table-nilai" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- View: Absensi (Wali) -->
+            <div id="view-absensi" class="hidden page-transition space-y-6">
+                <div class="flex justify-between items-center"><h2 class="text-2xl font-black">Presensi Kehadiran XI-RPL 1</h2><p class="text-sm font-bold bg-slate-200 px-4 py-2 rounded-xl">Bulan: Januari 2026</p></div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="attendance-list"></div>
+            </div>
+
+            <!-- View: Approval (Kepsek) -->
+            <div id="view-approval" class="hidden page-transition space-y-6">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center"><i data-lucide="shield-check" class="w-8 h-8"></i></div>
+                    <div><h2 class="text-3xl font-black">Validasi Akhir</h2><p class="text-slate-400">Verifikasi kelayakan nilai sebelum publikasi rapor</p></div>
+                </div>
+                <div class="space-y-3" id="approval-list"></div>
+            </div>
+
+            <!-- Placeholder for unfinished features -->
+            <div id="view-placeholder" class="hidden py-32 flex flex-col items-center justify-center text-center">
+                <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6"><i data-lucide="construction" class="w-12 h-12 text-slate-400"></i></div>
+                <h3 class="text-2xl font-black text-slate-400 uppercase tracking-widest">Modul Sedang Dikembangkan</h3>
+                <p class="text-slate-400 mt-2">Fitur ini akan segera hadir pada pembaruan server berikutnya.</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // System Data Mockup
+    const students = [
+        { id: 1, name: "Alexander Graham", nisn: "00192837", class: "XI RPL 1", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex", scores: { t: 88, uh: 85, uts: 90, uas: 92 }, attend: { s: 0, i: 0, a: 0 } },
+        { id: 2, name: "Isabella Smith", nisn: "00192838", class: "XI RPL 1", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella", scores: { t: 92, uh: 90, uts: 88, uas: 94 }, attend: { s: 1, i: 0, a: 0 } },
+        { id: 3, name: "Sebastian Vettle", nisn: "00192839", class: "XI RPL 1", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sebastian", scores: { t: 75, uh: 70, uts: 80, uas: 78 }, attend: { s: 0, i: 2, a: 1 } },
+        { id: 4, name: "Sophia Loren", nisn: "00192840", class: "XI RPL 1", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia", scores: { t: 85, uh: 88, uts: 82, uas: 86 }, attend: { s: 0, i: 0, a: 0 } }
+    ];
+
+    const rolesData = {
+        admin: { name: "Director John", icon: "user-cog", nav: [
+            { id: 'dashboard', label: 'Overview', icon: 'activity' },
+            { id: 'siswa', label: 'Data Master Siswa', icon: 'users' },
+            { id: 'mapel', label: 'Kurikulum', icon: 'layers' },
+            { id: 'setting', label: 'System Settings', icon: 'settings' }
+        ]},
+        guru: { name: "Prof. Ahmad", icon: "edit-3", nav: [
+            { id: 'dashboard', label: 'Dashboard', icon: 'layout' },
+            { id: 'input', label: 'Penilaian Akademik', icon: 'pen-tool' },
+            { id: 'sikap', label: 'Penilaian Sikap', icon: 'smile' },
+            { id: 'jurnal', label: 'Jurnal Harian', icon: 'book' }
+        ]},
+        wali: { name: "Mrs. Sarah", icon: "user-check", nav: [
+            { id: 'dashboard', label: 'Overview', icon: 'layout' },
+            { id: 'absensi', label: 'Rekap Absensi', icon: 'clipboard-list' },
+            { id: 'catatan', label: 'Laporan Perkembangan', icon: 'message-circle' },
+            { id: 'cetak', label: 'Cetak Dokumen Rapor', icon: 'printer' }
+        ]},
+        kepsek: { name: "Dr. Richard", icon: "award", nav: [
+            { id: 'dashboard', label: 'Strategic Overview', icon: 'bar-chart-3' },
+            { id: 'approval', label: 'Approval Pusat', icon: 'shield-check' },
+            { id: 'statistik', label: 'Demografi & Statistik', icon: 'pie-chart' }
+        ]}
+    };
+
+    let currentRole = '';
+
+    // Advanced Login Simulation
+    function handleLogin(role) {
+        document.getElementById('login-step-1').classList.add('hidden');
+        document.getElementById('login-loading').classList.remove('hidden');
+       
+        setTimeout(() => {
+            currentRole = role;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+           
+            const config = rolesData[role];
+            document.getElementById('role-tag').innerText = role.toUpperCase();
+            document.getElementById('user-name').innerText = config.name;
+            document.getElementById('user-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${config.name}`;
+           
+            buildNav(config.nav);
+            switchView('dashboard');
+            initAppContent();
+            lucide.createIcons();
+        }, 1500);
+    }
+
+    function buildNav(items) {
+        const nav = document.getElementById('sidebar-nav');
+        nav.innerHTML = items.map(item => `
+            <div onclick="switchView('${item.id}')" id="nav-${item.id}" class="sidebar-link flex items-center gap-4 px-6 py-4 text-slate-500 font-bold text-sm">
+                <i data-lucide="${item.icon}" class="w-4 h-4"></i> ${item.label}
+            </div>
+        `).join('');
+    }
+
+    function switchView(viewId) {
+        const views = ['dashboard', 'siswa', 'input', 'absensi', 'approval', 'placeholder'];
+        views.forEach(v => {
+            const el = document.getElementById(`view-${v}`);
+            if (el) el.classList.add('hidden');
+        });
+
+        const target = document.getElementById(`view-${viewId}`) || document.getElementById('view-placeholder');
+        target.classList.remove('hidden');
+
+        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+        const activeNav = document.getElementById(`nav-${viewId}`);
+        if (activeNav) activeNav.classList.add('active');
+       
+        // Reset Scroll
+        document.getElementById('view-container').scrollTop = 0;
+    }
+
+    function initAppContent() {
+        // Table Siswa
+        document.getElementById('table-siswa').innerHTML = students.map(s => `
+            <tr class="hover:bg-slate-50 transition-colors group">
+                <td class="px-8 py-5 flex items-center gap-4">
+                    <img src="${s.avatar}" class="w-10 h-10 rounded-xl bg-slate-100 group-hover:scale-110 transition-transform">
+                    <div><p class="font-bold text-slate-900">${s.name}</p><p class="text-[10px] text-slate-400 font-bold">REG: 2024-SYS</p></div>
+                </td>
+                <td class="px-4 py-5 font-mono text-xs text-slate-500">${s.nisn}</td>
+                <td class="px-4 py-5"><span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black">${s.class}</span></td>
+                <td class="px-4 py-5"><span class="flex items-center gap-1.5 text-[10px] font-black text-emerald-500"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> AKTIF</span></td>
+                <td class="px-8 py-5 text-right"><button class="w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-900 hover:text-white transition-all"><i data-lucide="eye" class="w-4 h-4 m-auto"></i></button></td>
+            </tr>
+        `).join('');
+
+        // Table Nilai
+        document.getElementById('table-nilai').innerHTML = students.map(s => `
+            <tr>
+                <td class="px-10 py-6 font-bold text-slate-700">${s.name}</td>
+                <td class="px-4 py-6 text-center"><input type="number" value="${s.scores.t}" class="w-14 h-10 bg-slate-50 border-none rounded-xl text-center font-black outline-none focus:ring-2 ring-blue-500"></td>
+                <td class="px-4 py-6 text-center"><input type="number" value="${s.scores.uh}" class="w-14 h-10 bg-slate-50 border-none rounded-xl text-center font-black outline-none focus:ring-2 ring-blue-500"></td>
+                <td class="px-4 py-6 text-center"><input type="number" value="${s.scores.uts}" class="w-14 h-10 bg-slate-50 border-none rounded-xl text-center font-black outline-none focus:ring-2 ring-blue-500"></td>
+                <td class="px-4 py-6 text-center"><input type="number" value="${s.scores.uas}" class="w-14 h-10 bg-slate-50 border-none rounded-xl text-center font-black outline-none focus:ring-2 ring-blue-500"></td>
+                <td class="px-10 py-6 text-center font-black text-blue-700 bg-blue-50/50">${Math.round((s.scores.t + s.scores.uh + s.scores.uts + s.scores.uas)/4)}</td>
+            </tr>
+        `).join('');
+
+        // Absensi Grid
+        document.getElementById('attendance-list').innerHTML = students.map(s => `
+            <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="${s.avatar}" class="w-14 h-14 rounded-2xl bg-slate-100">
+                    <div><h4 class="font-black text-slate-900">${s.name}</h4><p class="text-[10px] font-bold text-slate-400">XI-RPL 1</p></div>
+                </div>
+                <div class="flex gap-2">
+                    <div class="px-4 py-2 bg-orange-50 text-orange-600 rounded-2xl text-center"><p class="text-[9px] font-black">S</p><p class="text-lg font-black leading-tight">${s.attend.s}</p></div>
+                    <div class="px-4 py-2 bg-blue-50 text-blue-600 rounded-2xl text-center"><p class="text-[9px] font-black">I</p><p class="text-lg font-black leading-tight">${s.attend.i}</p></div>
+                    <div class="px-4 py-2 bg-red-50 text-red-600 rounded-2xl text-center"><p class="text-[9px] font-black">A</p><p class="text-lg font-black leading-tight">${s.attend.a}</p></div>
+                </div>
+            </div>
+        `).join('');
+
+        // Approval List
+        document.getElementById('approval-list').innerHTML = students.map(s => `
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 flex items-center justify-between group">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 bg-slate-50 text-slate-900 flex items-center justify-center font-black text-xl rounded-2xl border border-slate-100">${Math.round((s.scores.t + s.scores.uh + s.scores.uts + s.scores.uas)/4)}</div>
+                    <div><h4 class="font-black text-slate-900 text-lg">${s.name}</h4><p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Siap Publikasi</p></div>
+                </div>
+                <button onclick="approveAction(this)" class="px-10 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs hover:bg-emerald-600 transition-all">APPROVE RAPOR</button>
+            </div>
+        `).join('');
+
+        initDashboardChart();
+    }
+
+    function approveAction(btn) {
+        btn.innerText = "✓ APPROVED";
+        btn.classList.replace('bg-slate-900', 'bg-emerald-600');
+        btn.disabled = true;
+    }
+
+    function saveNotify() {
+        const box = document.createElement('div');
+        box.className = "fixed bottom-10 right-10 bg-blue-600 text-white px-10 py-5 rounded-[2rem] font-black shadow-2xl z-[200] page-transition flex items-center gap-4";
+        box.innerHTML = `<i data-lucide="cloud-upload" class="w-6 h-6"></i> DATA BERHASIL DISINKRONISASI KE CLOUD SERVER`;
+        document.body.appendChild(box);
+        lucide.createIcons();
+        setTimeout(() => box.remove(), 4000);
+    }
+
+    function initDashboardChart() {
+        const ctx = document.getElementById('chartDashboard').getContext('2d');
+        if(window.dashChart) window.dashChart.destroy();
+        window.dashChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4', 'UTS', 'UAS'],
+                datasets: [{
+                    label: 'Trend Nilai',
+                    data: [78, 82, 85, 84, 89, 92],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                    borderWidth: 4,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 3
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: false, grid: { display: false } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // Modern Clock System
+    function updateClock() {
+        const now = new Date();
+        const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+        document.getElementById('digital-clock').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        document.getElementById('h-hand').style.transform = `rotate(${(h*30)+(m/2)}deg)`;
+        document.getElementById('m-hand').style.transform = `rotate(${m*6}deg)`;
+        document.getElementById('s-hand').style.transform = `rotate(${s*6}deg)`;
+        document.getElementById('digital-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    window.onload = () => lucide.createIcons();
+</script>
+
+</body>
+</html>
